@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Game
 from .serializers import GameSerializer
@@ -12,6 +14,7 @@ def index(request):
     return render(request, 'index.html')
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
@@ -43,7 +46,6 @@ class GameViewSet(viewsets.ModelViewSet):
         board[position] = game.current_player
         game.board = ''.join(board)
 
-        # победа
         winning = self.get_winning_cells(board)
         if winning:
             game.status = 'finished'
